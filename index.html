@@ -486,6 +486,53 @@ textarea.form-input { resize: vertical; min-height: 70px; }
 }
 .btn-again:hover { background: var(--primary-light); }
 
+/* ── REPOSITORY ── */
+.btn-save-repo {
+  width: 100%; padding: 12px;
+  background: var(--primary); border: none;
+  color: #fff; border-radius: var(--radius-sm);
+  font-size: 14px; font-weight: 500; cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: all 0.2s; margin-top: 0.6rem;
+}
+.btn-save-repo:hover { background: #2d5039; }
+.btn-save-repo.saved { background: var(--success); }
+.repo-search {
+  width: 100%; padding: 10px 14px;
+  border: 1px solid var(--border); border-radius: var(--radius-sm);
+  font-size: 14px; font-family: 'DM Sans', sans-serif;
+  background: var(--bg); color: var(--text1);
+  margin-bottom: 1rem; box-sizing: border-box; outline: none;
+  transition: border-color 0.2s;
+}
+.repo-search:focus { border-color: var(--primary); }
+.repo-list { display: flex; flex-direction: column; gap: 8px; }
+.repo-item {
+  display: flex; align-items: center;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  transition: all 0.15s;
+}
+.repo-item:hover { border-color: var(--primary); background: var(--primary-light); }
+.repo-item-clickable {
+  flex: 1; display: flex; align-items: center; gap: 14px;
+  padding: 12px 14px; cursor: pointer; min-width: 0;
+}
+.repo-delete-btn {
+  background: none; border-left: 1px solid var(--border);
+  color: var(--text3); border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  padding: 0 14px; font-size: 18px; cursor: pointer; align-self: stretch;
+  display: flex; align-items: center;
+  transition: all 0.15s; flex-shrink: 0;
+}
+.repo-delete-btn:hover { background: #FEF5F2; color: #C44; border-left-color: #FAD5C8; }
+.repo-tags { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 4px; }
+.repo-tag {
+  font-size: 11px; padding: 2px 8px;
+  background: var(--primary-light); color: var(--primary);
+  border-radius: 20px; font-weight: 500;
+}
+  
 /* NUTRIÇÃO - inline number inputs */
 .num-wrap { position: relative; display: flex; align-items: center; }
 .num-wrap input[type=number] { -moz-appearance: textfield; }
@@ -530,6 +577,9 @@ textarea.form-input { resize: vertical; min-height: 70px; }
       <button class="nav-link" onclick="goTo('historico')" id="nl-historico">
         <span class="icon">📖</span> Histórico
       </button>
+      <button class="nav-link" onclick="goTo('receituario')" id="nl-receituario">
+        <span class="icon">📚</span> Receituário
+      </button>
     </div>
     <div class="nav-bottom">
       <button class="nav-key-btn" onclick="changeKey()">🔑 Trocar chave de API</button>
@@ -543,6 +593,7 @@ textarea.form-input { resize: vertical; min-height: 70px; }
       <button class="mob-nav-link" onclick="goTo('familia')" id="mn-familia"><span class="icon">👨‍👩‍👧‍👦</span>Família</button>
       <button class="mob-nav-link" onclick="goTo('nutricao')" id="mn-nutricao"><span class="icon">🥗</span>Nutrição</button>
       <button class="mob-nav-link" onclick="goTo('historico')" id="mn-historico"><span class="icon">📖</span>Histórico</button>
+      <button class="mob-nav-link" onclick="goTo('receituario')" id="mn-receituario"><span class="icon">📚</span>Receitas</button>
     </div>
   </nav>
 
@@ -581,15 +632,70 @@ textarea.form-input { resize: vertical; min-height: 70px; }
       </div>
 
       <div class="card">
-        <div class="card-title">Restrições alimentares</div>
-        <div class="chips" id="restrict-chips">
-          <span class="chip" data-val="Sem glúten">Sem glúten</span>
-          <span class="chip" data-val="Sem lactose">Sem lactose</span>
-          <span class="chip" data-val="Vegetariano">Vegetariano</span>
-          <span class="chip" data-val="Vegano">Vegano</span>
-          <span class="chip" data-val="Sem frutos do mar">Sem frutos do mar</span>
-          <span class="chip" data-val="Sem ovos">Sem ovos</span>
-          <span class="chip" data-val="Sem oleaginosas">Sem oleaginosas</span>
+        <div class="card-title">Ingredientes disponíveis</div>
+        <div class="chips" id="ingredient-chips">
+          <span class="chip on" data-val="Cebola">🧅 Cebola</span>
+          <span class="chip on" data-val="Alho">🧄 Alho</span>
+          <span class="chip on" data-val="Cenoura">🥕 Cenoura</span>
+          <span class="chip" data-val="Berinjela">🍆 Berinjela</span>
+          <span class="chip" data-val="Bife de carne">🥩 Bife de carne</span>
+          <span class="chip" data-val="Filé de peixe">🐟 Filé de peixe</span>
+          <span class="chip" data-val="Filé de frango">🍗 Filé de frango</span>
+          
+          <!-- Legumes e verduras -->
+          <span class="chip" data-val="Tomate">🍅 Tomate</span>
+          <span class="chip" data-val="Batata">🥔 Batata</span>
+          <span class="chip" data-val="Abobrinha">🥒 Abobrinha</span>
+          <span class="chip" data-val="Pimentão">🫑 Pimentão</span>
+          <span class="chip" data-val="Brócolis">🥦 Brócolis</span>
+          <span class="chip" data-val="Espinafre">🥬 Espinafre</span>
+          <span class="chip" data-val="Couve">🥬 Couve</span>
+          <span class="chip" data-val="Alface">🥗 Alface</span>
+          <span class="chip" data-val="Milho">🌽 Milho</span>
+          <span class="chip" data-val="Mandioca">🍠 Mandioca</span>
+          <span class="chip" data-val="Batata-doce">🍠 Batata-doce</span>
+          <span class="chip" data-val="Abóbora">🎃 Abóbora</span>
+          <span class="chip" data-val="Chuchu">🥦 Chuchu</span>
+          <span class="chip" data-val="Quiabo">🌿 Quiabo</span>
+          
+          <!-- Proteínas -->
+          <span class="chip" data-val="Ovo">🥚 Ovo</span>
+          <span class="chip" data-val="Linguiça">🌭 Linguiça</span>
+          <span class="chip" data-val="Bacon">🥓 Bacon</span>
+          <span class="chip" data-val="Camarão">🍤 Camarão</span>
+          <span class="chip" data-val="Feijão">🫘 Feijão</span>
+          <span class="chip" data-val="Lentilha">🫘 Lentilha</span>
+          <span class="chip" data-val="Grão-de-bico">🫘 Grão-de-bico</span>
+          
+          <!-- Laticínios -->
+          <span class="chip" data-val="Queijo">🧀 Queijo</span>
+          <span class="chip" data-val="Manteiga">🧈 Manteiga</span>
+          <span class="chip" data-val="Leite">🥛 Leite</span>
+          <span class="chip" data-val="Creme de leite">🥛 Creme de leite</span>
+          
+          <!-- Grãos e massas -->
+          <span class="chip" data-val="Arroz">🍚 Arroz</span>
+          <span class="chip" data-val="Macarrão">🍝 Macarrão</span>
+          <span class="chip" data-val="Farinha de trigo">🌾 Farinha de trigo</span>
+          <span class="chip" data-val="Farinha de mandioca">🌾 Farinha de mandioca</span>
+          <span class="chip" data-val="Aveia">🌾 Aveia</span>
+          
+          <!-- Temperos e ervas -->
+          <span class="chip" data-val="Sal">🧂 Sal</span>
+          <span class="chip" data-val="Pimenta">🌶️ Pimenta</span>
+          <span class="chip" data-val="Limão">🍋 Limão</span>
+          <span class="chip" data-val="Azeite">🫒 Azeite</span>
+          <span class="chip" data-val="Cheiro-verde">🌿 Cheiro-verde</span>
+          <span class="chip" data-val="Louro">🌿 Louro</span>
+          <span class="chip" data-val="Gengibre">🫚 Gengibre</span>
+          <span class="chip" data-val="Açafrão (cúrcuma)">🟡 Açafrão (cúrcuma)</span>
+          <span class="chip" data-val="Cominho">🌿 Cominho</span>
+          <span class="chip" data-val="Orégano">🌿 Orégano</span>
+          
+          <!-- Frutas comuns no cozido -->
+          <span class="chip" data-val="Banana">🍌 Banana</span>
+          <span class="chip" data-val="Maçã">🍎 Maçã</span>
+          <span class="chip" data-val="Abacaxi">🍍 Abacaxi</span>
         </div>
       </div>
 
@@ -768,7 +874,16 @@ textarea.form-input { resize: vertical; min-height: 70px; }
       </div>
       <div id="history-area"></div>
     </div>
-
+    
+    <!-- ══ RECEITUÁRIO ══ -->
+    <div class="section-page" id="page-receituario">
+      <div class="page-header">
+        <div class="page-title">Receituário</div>
+        <div class="page-sub">Suas receitas salvas — acesse sem precisar gerar novamente</div>
+      </div>
+      <div id="repository-area"></div>
+    </div>
+ 
   </main>
 </div>
 
@@ -884,6 +999,7 @@ function goTo(page) {
   const ids = ['nl-' + page, 'mn-' + page];
   ids.forEach(id => { const el = document.getElementById(id); if (el) el.classList.add('active'); });
   if (page === 'historico') renderHistory();
+  if (page === 'receituario') renderRepository();
   window.scrollTo(0, 0);
 }
 
@@ -1031,7 +1147,7 @@ async function generateMeal() {
   if (cuisines.length === 0) { alert('Selecione ao menos uma culinária.'); return; }
 
   const mealType = getChipVals('meal-type-chips')[0] || 'Almoço';
-  const restrictions = getChipVals('restrict-chips');
+  const ingredients = getChipVals('ingredient-chips');
   const fam = loadFamily();
   const nut = loadNutrition();
 
@@ -1077,7 +1193,7 @@ ${nut.suplem ? `SUPLEMENTOS EM USO: ${nut.suplem}` : ''}
 ${nut.obs ? `OBSERVAÇÕES GERAIS: ${nut.obs}` : ''}
 
 CULINÁRIA: ${cuisines.join(' ou ')}
-${restrictions.length ? `RESTRIÇÕES: ${restrictions.join(', ')}` : ''}
+${ingredients.length ? `INGREDIENTES DISPONÍVEIS (utilize estes na receita): ${ingredients.join(', ')}` : ''}
 
 INSTRUÇÕES:
 - Calcule quantidades separadas para adultos e crianças
@@ -1235,6 +1351,7 @@ function renderResult(meal, nut, nAdults, nChildren) {
         </div>
 
         <button class="btn-again" onclick="generateMeal()">↺ Gerar outro prato</button>
+        <button class="btn-save-repo" id="btn-save-repo" onclick="saveCurrentToRepository()">📚 Salvar no receituário</button>
       </div>
     </div>
   `;
@@ -1260,7 +1377,118 @@ function barHTML(label, val, meta_meal, meta_day, pct, color) {
     </div>
   `;
 }
+// ══════════════════════════════════════
+// REPOSITORY
+// ══════════════════════════════════════
+function loadRepository() {
+  return ls('repository') || [];
+}
+ 
+function saveCurrentToRepository() {
+  if (!currentMeal) return;
+  const repo = loadRepository();
+  const exists = repo.find(r => r.timestamp === currentMeal.timestamp);
+  const btn = document.getElementById('btn-save-repo');
+  if (exists) {
+    if (btn) { btn.textContent = '✓ Já está no receituário'; setTimeout(() => { btn.textContent = '📚 Salvar no receituário'; }, 2200); }
+    return;
+  }
+  repo.push({ ...currentMeal, savedAt: Date.now() });
+  ls('repository', repo);
+  if (btn) {
+    btn.textContent = '✓ Salva no receituário!';
+    btn.classList.add('saved');
+    setTimeout(() => { btn.textContent = '📚 Salvar no receituário'; btn.classList.remove('saved'); }, 2200);
+  }
+}
+ 
+function renderRepository() {
+  const repo = loadRepository();
+  const area = document.getElementById('repository-area');
+  if (!repo.length) {
+    area.innerHTML = `<div class="empty-state"><div class="empty-icon">📚</div><div class="empty-text">Nenhuma receita salva ainda.<br>Gere um prato e clique em "Salvar no receituário".</div></div>`;
+    return;
+  }
+  const query = (document.getElementById('repo-search')?.value || '').toLowerCase();
+  const filtered = query
+    ? repo.filter(r =>
+        r.nome.toLowerCase().includes(query) ||
+        r.culinaria.toLowerCase().includes(query) ||
+        (r.mealType || '').toLowerCase().includes(query)
+      )
+    : [...repo];
+  const sorted = filtered.slice().reverse(); // mais recentes primeiro
+ 
+  area.innerHTML = `
+    <input class="repo-search" id="repo-search" type="text"
+      placeholder="Buscar por nome, culinária ou refeição..."
+      oninput="renderRepository()" value="${query.replace(/"/g, '&quot;')}">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+      <span style="font-size:13px;color:var(--text3);">
+        ${sorted.length} receita${sorted.length !== 1 ? 's' : ''} salva${sorted.length !== 1 ? 's' : ''}
+        ${repo.length !== sorted.length ? ` de ${repo.length}` : ''}
+      </span>
+      <button class="btn-clear-hist" onclick="clearRepository()">Limpar tudo</button>
+    </div>
+    <div class="repo-list">
+      ${sorted.length === 0
+        ? `<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-text">Nenhuma receita encontrada para "${query}".</div></div>`
+        : sorted.map(r => {
+            const originalIdx = repo.indexOf(r);
+            return `
+              <div class="repo-item">
+                <div class="repo-item-clickable" onclick="showRepositoryMeal(${originalIdx})">
+                  <div class="history-emoji">${CUISINE_EMOJI[r.culinaria] || '🍽'}</div>
+                  <div class="history-info">
+                    <div class="history-name">${r.nome}</div>
+                    <div class="repo-tags">
+                      <span class="repo-tag">${r.culinaria}</span>
+                      <span class="repo-tag">${r.mealType || ''}</span>
+                      <span class="repo-tag">🔥 ${r.kcal_adulto} kcal</span>
+                      <span class="repo-tag">⏱ ${r.tempo_preparo}</span>
+                    </div>
+                    <div class="history-meta">Salva em ${new Date(r.savedAt || r.timestamp).toLocaleDateString('pt-BR')}</div>
+                  </div>
+                </div>
+                <button class="repo-delete-btn" onclick="event.stopPropagation();deleteFromRepository(${originalIdx})" title="Remover">×</button>
+              </div>
+            `;
+          }).join('')
+      }
+    </div>
+  `;
+}
+ 
+function showRepositoryMeal(idx) {
+  const repo = loadRepository();
+  const meal = repo[idx];
+  if (!meal) return;
+  const nut = loadNutrition();
+  const fam = loadFamily();
+  const nAdults = fam.filter(m => m.tipo === 'adulto').length;
+  const nChildren = fam.filter(m => m.tipo === 'criança').length;
+  currentMeal = meal;
+  goTo('home');
+  renderResult(meal, nut, nAdults, nChildren);
+  setTimeout(() => document.getElementById('result-area').scrollIntoView({ behavior: 'smooth' }), 300);
+}
+ 
+function deleteFromRepository(idx) {
+  if (!confirm('Remover esta receita do receituário?')) return;
+  const repo = loadRepository();
+  repo.splice(idx, 1);
+  ls('repository', repo);
+  renderRepository();
+}
+ 
+function clearRepository() {
+  if (!confirm('Remover todas as receitas do receituário?')) return;
+  ls('repository', []);
+  renderRepository();
+}
 
+
+  
 // ══════════════════════════════════════
 // HISTORY
 // ══════════════════════════════════════
@@ -1333,7 +1561,7 @@ function showFeedback(id) {
 document.addEventListener('DOMContentLoaded', () => {
   initChips('meal-type-chips', false);
   initChips('cuisine-chips', true);
-  initChips('restrict-chips', true);
+  initChips('ingredient-chips', true);
   initChips('priority-chips', true);
   initChips('avoid-chips', true);
   initChips('health-chips', true);
