@@ -532,7 +532,7 @@ textarea.form-input { resize: vertical; min-height: 70px; }
   background: var(--primary-light); color: var(--primary);
   border-radius: 20px; font-weight: 500;
 }
-  
+
 /* NUTRIÇÃO - inline number inputs */
 .num-wrap { position: relative; display: flex; align-items: center; }
 .num-wrap input[type=number] { -moz-appearance: textfield; }
@@ -633,69 +633,59 @@ textarea.form-input { resize: vertical; min-height: 70px; }
 
       <div class="card">
         <div class="card-title">Ingredientes disponíveis</div>
-        <div class="chips" id="ingredient-chips">
-          <span class="chip on" data-val="Cebola">🧅 Cebola</span>
-          <span class="chip on" data-val="Alho">🧄 Alho</span>
-          <span class="chip on" data-val="Cenoura">🥕 Cenoura</span>
-          <span class="chip" data-val="Berinjela">🍆 Berinjela</span>
-          <span class="chip" data-val="Bife de carne">🥩 Bife de carne</span>
-          <span class="chip" data-val="Filé de peixe">🐟 Filé de peixe</span>
-          <span class="chip" data-val="Filé de frango">🍗 Filé de frango</span>
-          
-          <!-- Legumes e verduras -->
-          <span class="chip" data-val="Tomate">🍅 Tomate</span>
-          <span class="chip" data-val="Batata">🥔 Batata</span>
-          <span class="chip" data-val="Abobrinha">🥒 Abobrinha</span>
-          <span class="chip" data-val="Pimentão">🫑 Pimentão</span>
-          <span class="chip" data-val="Brócolis">🥦 Brócolis</span>
-          <span class="chip" data-val="Espinafre">🥬 Espinafre</span>
-          <span class="chip" data-val="Couve">🥬 Couve</span>
-          <span class="chip" data-val="Alface">🥗 Alface</span>
-          <span class="chip" data-val="Milho">🌽 Milho</span>
-          <span class="chip" data-val="Mandioca">🍠 Mandioca</span>
-          <span class="chip" data-val="Batata-doce">🍠 Batata-doce</span>
-          <span class="chip" data-val="Abóbora">🎃 Abóbora</span>
-          <span class="chip" data-val="Chuchu">🥦 Chuchu</span>
-          <span class="chip" data-val="Quiabo">🌿 Quiabo</span>
-          
-          <!-- Proteínas -->
-          <span class="chip" data-val="Ovo">🥚 Ovo</span>
-          <span class="chip" data-val="Linguiça">🌭 Linguiça</span>
-          <span class="chip" data-val="Bacon">🥓 Bacon</span>
-          <span class="chip" data-val="Camarão">🍤 Camarão</span>
-          <span class="chip" data-val="Feijão">🫘 Feijão</span>
-          <span class="chip" data-val="Lentilha">🫘 Lentilha</span>
-          <span class="chip" data-val="Grão-de-bico">🫘 Grão-de-bico</span>
-          
-          <!-- Laticínios -->
-          <span class="chip" data-val="Queijo">🧀 Queijo</span>
-          <span class="chip" data-val="Manteiga">🧈 Manteiga</span>
-          <span class="chip" data-val="Leite">🥛 Leite</span>
-          <span class="chip" data-val="Creme de leite">🥛 Creme de leite</span>
-          
-          <!-- Grãos e massas -->
-          <span class="chip" data-val="Arroz">🍚 Arroz</span>
-          <span class="chip" data-val="Macarrão">🍝 Macarrão</span>
-          <span class="chip" data-val="Farinha de trigo">🌾 Farinha de trigo</span>
-          <span class="chip" data-val="Farinha de mandioca">🌾 Farinha de mandioca</span>
-          <span class="chip" data-val="Aveia">🌾 Aveia</span>
-          
-          <!-- Temperos e ervas -->
-          <span class="chip" data-val="Sal">🧂 Sal</span>
-          <span class="chip" data-val="Pimenta">🌶️ Pimenta</span>
-          <span class="chip" data-val="Limão">🍋 Limão</span>
-          <span class="chip" data-val="Azeite">🫒 Azeite</span>
-          <span class="chip" data-val="Cheiro-verde">🌿 Cheiro-verde</span>
-          <span class="chip" data-val="Louro">🌿 Louro</span>
-          <span class="chip" data-val="Gengibre">🫚 Gengibre</span>
-          <span class="chip" data-val="Açafrão (cúrcuma)">🟡 Açafrão (cúrcuma)</span>
-          <span class="chip" data-val="Cominho">🌿 Cominho</span>
-          <span class="chip" data-val="Orégano">🌿 Orégano</span>
-          
-          <!-- Frutas comuns no cozido -->
-          <span class="chip" data-val="Banana">🍌 Banana</span>
-          <span class="chip" data-val="Maçã">🍎 Maçã</span>
-          <span class="chip" data-val="Abacaxi">🍍 Abacaxi</span>
+
+        <div class="nutr-section">
+          <div class="nutr-section-label">Proteína (escolha 1)</div>
+          <div class="chips chip-single" id="protein-chips">
+            <span class="chip on" data-val="Filé de frango">🍗 Filé de frango</span>
+            <span class="chip" data-val="Bife de carne">🥩 Bife de carne</span>
+            <span class="chip" data-val="Filé de peixe">🐟 Filé de peixe</span>
+            <span class="chip" data-val="Ovos">🥚 Ovos</span>
+            <span class="chip" data-val="Feijão">🫘 Feijão</span>
+          </div>
+        </div>
+
+        <hr class="card-divider">
+
+        <div class="nutr-section">
+          <div class="nutr-section-label">Legumes e vegetais</div>
+          <div class="chips" id="veggie-chips">
+            <span class="chip on" data-val="Cebola">🧅 Cebola</span>
+            <span class="chip on" data-val="Alho">🧄 Alho</span>
+            <span class="chip on" data-val="Cenoura">🥕 Cenoura</span>
+            <span class="chip" data-val="Berinjela">🍆 Berinjela</span>
+            <span class="chip" data-val="Brócolis">🥦 Brócolis</span>
+            <span class="chip" data-val="Tomate">🍅 Tomate</span>
+            <span class="chip" data-val="Outros vegetais">🌿 Outros</span>
+          </div>
+        </div>
+
+        <hr class="card-divider">
+
+        <div class="nutr-section">
+          <div class="nutr-section-label">Carboidratos</div>
+          <div class="chips" id="carb-chips">
+            <span class="chip on" data-val="Arroz">🍚 Arroz</span>
+            <span class="chip" data-val="Batata">🥔 Batata</span>
+            <span class="chip" data-val="Batata doce">🍠 Batata doce</span>
+            <span class="chip" data-val="Macarrão">🍝 Macarrão</span>
+            <span class="chip" data-val="Pão">🍞 Pão</span>
+            <span class="chip" data-val="Outros carboidratos">🌾 Outros</span>
+          </div>
+        </div>
+
+        <hr class="card-divider">
+
+        <div class="nutr-section" style="margin-bottom:0;">
+          <div class="nutr-section-label">Temperos</div>
+          <div class="chips" id="seasoning-chips">
+            <span class="chip on" data-val="Sal e pimenta">🧂 Sal e pimenta</span>
+            <span class="chip on" data-val="Azeite">🫒 Azeite</span>
+            <span class="chip" data-val="Limão">🍋 Limão</span>
+            <span class="chip" data-val="Ervas finas">🌿 Ervas finas</span>
+            <span class="chip" data-val="Alho em pó">🧄 Alho em pó</span>
+            <span class="chip" data-val="Outros temperos">🌶️ Outros</span>
+          </div>
         </div>
       </div>
 
@@ -874,7 +864,7 @@ textarea.form-input { resize: vertical; min-height: 70px; }
       </div>
       <div id="history-area"></div>
     </div>
-    
+
     <!-- ══ RECEITUÁRIO ══ -->
     <div class="section-page" id="page-receituario">
       <div class="page-header">
@@ -883,7 +873,7 @@ textarea.form-input { resize: vertical; min-height: 70px; }
       </div>
       <div id="repository-area"></div>
     </div>
- 
+
   </main>
 </div>
 
@@ -938,15 +928,9 @@ function ls(key, val) {
   localStorage.setItem(P + key, JSON.stringify(val));
 }
 
-function loadNutrition() {
-  return ls('nutrition') || DEFAULT_NUTRITION;
-}
-function loadFamily() {
-  return ls('family') || DEFAULT_FAMILY;
-}
-function loadHistory() {
-  return ls('history') || [];
-}
+function loadNutrition() { return ls('nutrition') || DEFAULT_NUTRITION; }
+function loadFamily() { return ls('family') || DEFAULT_FAMILY; }
+function loadHistory() { return ls('history') || []; }
 
 // ══════════════════════════════════════
 // API KEY
@@ -1147,7 +1131,11 @@ async function generateMeal() {
   if (cuisines.length === 0) { alert('Selecione ao menos uma culinária.'); return; }
 
   const mealType = getChipVals('meal-type-chips')[0] || 'Almoço';
-  const ingredients = getChipVals('ingredient-chips');
+  const protein = getChipVals('protein-chips');
+  const veggies = getChipVals('veggie-chips');
+  const carbs = getChipVals('carb-chips');
+  const seasonings = getChipVals('seasoning-chips');
+  const ingredients = [...protein, ...veggies, ...carbs, ...seasonings];
   const fam = loadFamily();
   const nut = loadNutrition();
 
@@ -1193,7 +1181,7 @@ ${nut.suplem ? `SUPLEMENTOS EM USO: ${nut.suplem}` : ''}
 ${nut.obs ? `OBSERVAÇÕES GERAIS: ${nut.obs}` : ''}
 
 CULINÁRIA: ${cuisines.join(' ou ')}
-${ingredients.length ? `INGREDIENTES DISPONÍVEIS (utilize estes na receita): ${ingredients.join(', ')}` : ''}
+${ingredients.length ? `INGREDIENTES DISPONÍVEIS (priorize estes na receita): ${ingredients.join(', ')}` : ''}
 
 INSTRUÇÕES:
 - Calcule quantidades separadas para adultos e crianças
@@ -1356,7 +1344,6 @@ function renderResult(meal, nut, nAdults, nChildren) {
     </div>
   `;
 
-  // animate bars
   setTimeout(() => {
     document.querySelectorAll('.bar-fill').forEach(b => {
       b.style.width = b.dataset.w + '%';
@@ -1377,13 +1364,14 @@ function barHTML(label, val, meta_meal, meta_day, pct, color) {
     </div>
   `;
 }
+
 // ══════════════════════════════════════
 // REPOSITORY
 // ══════════════════════════════════════
 function loadRepository() {
   return ls('repository') || [];
 }
- 
+
 function saveCurrentToRepository() {
   if (!currentMeal) return;
   const repo = loadRepository();
@@ -1401,7 +1389,7 @@ function saveCurrentToRepository() {
     setTimeout(() => { btn.textContent = '📚 Salvar no receituário'; btn.classList.remove('saved'); }, 2200);
   }
 }
- 
+
 function renderRepository() {
   const repo = loadRepository();
   const area = document.getElementById('repository-area');
@@ -1417,8 +1405,8 @@ function renderRepository() {
         (r.mealType || '').toLowerCase().includes(query)
       )
     : [...repo];
-  const sorted = filtered.slice().reverse(); // mais recentes primeiro
- 
+  const sorted = filtered.slice().reverse();
+
   area.innerHTML = `
     <input class="repo-search" id="repo-search" type="text"
       placeholder="Buscar por nome, culinária ou refeição..."
@@ -1458,7 +1446,7 @@ function renderRepository() {
     </div>
   `;
 }
- 
+
 function showRepositoryMeal(idx) {
   const repo = loadRepository();
   const meal = repo[idx];
@@ -1472,7 +1460,7 @@ function showRepositoryMeal(idx) {
   renderResult(meal, nut, nAdults, nChildren);
   setTimeout(() => document.getElementById('result-area').scrollIntoView({ behavior: 'smooth' }), 300);
 }
- 
+
 function deleteFromRepository(idx) {
   if (!confirm('Remover esta receita do receituário?')) return;
   const repo = loadRepository();
@@ -1480,15 +1468,13 @@ function deleteFromRepository(idx) {
   ls('repository', repo);
   renderRepository();
 }
- 
+
 function clearRepository() {
   if (!confirm('Remover todas as receitas do receituário?')) return;
   ls('repository', []);
   renderRepository();
 }
 
-
-  
 // ══════════════════════════════════════
 // HISTORY
 // ══════════════════════════════════════
@@ -1561,7 +1547,10 @@ function showFeedback(id) {
 document.addEventListener('DOMContentLoaded', () => {
   initChips('meal-type-chips', false);
   initChips('cuisine-chips', true);
-  initChips('ingredient-chips', true);
+  initChips('protein-chips', false);
+  initChips('veggie-chips', true);
+  initChips('carb-chips', true);
+  initChips('seasoning-chips', true);
   initChips('priority-chips', true);
   initChips('avoid-chips', true);
   initChips('health-chips', true);
