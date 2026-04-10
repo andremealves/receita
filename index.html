@@ -1,0 +1,1344 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mesa Familiar — Planejador de Refeições</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;1,500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #FAFAF8;
+  --bg2: #F3F2EE;
+  --card: #FFFFFF;
+  --border: #E8E8E4;
+  --border2: #D4D3CE;
+  --primary: #3D6B4F;
+  --primary-light: #EBF2ED;
+  --accent: #C4622D;
+  --accent-light: #FAF0EA;
+  --text: #1A1A18;
+  --text2: #5A5A56;
+  --text3: #9A9A94;
+  --success: #2E7D4F;
+  --success-bg: #EBF5EF;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04);
+  --nav-w: 220px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+/* ── API KEY SCREEN ── */
+#api-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: var(--bg);
+}
+.api-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 3rem 2.5rem;
+  max-width: 460px;
+  width: 100%;
+  box-shadow: var(--shadow);
+  animation: fadeUp 0.5s ease;
+}
+.api-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.8rem;
+  color: var(--primary);
+  margin-bottom: 0.25rem;
+}
+.api-sub { font-size: 13px; color: var(--text3); margin-bottom: 2rem; }
+.api-label { font-size: 12px; font-weight: 500; color: var(--text2); letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 6px; display: block; }
+.api-input-wrap { position: relative; margin-bottom: 1rem; }
+.api-input-wrap input {
+  width: 100%; padding: 12px 44px 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 14px; font-family: monospace;
+  background: var(--bg2);
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s;
+}
+.api-input-wrap input:focus { border-color: var(--primary); background: #fff; }
+.eye-btn {
+  position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+  background: none; border: none; cursor: pointer; color: var(--text3);
+  font-size: 16px; padding: 2px;
+}
+.api-hint { font-size: 12px; color: var(--text3); margin-bottom: 1.5rem; }
+.btn-primary {
+  width: 100%; padding: 13px;
+  background: var(--primary); color: #fff;
+  border: none; border-radius: var(--radius-sm);
+  font-size: 15px; font-weight: 500;
+  cursor: pointer; transition: all 0.2s;
+  font-family: 'DM Sans', sans-serif;
+}
+.btn-primary:hover { background: #2d5039; transform: translateY(-1px); }
+.btn-primary:active { transform: translateY(0); }
+
+/* ── APP LAYOUT ── */
+#app { display: none; min-height: 100vh; }
+
+nav#sidebar {
+  position: fixed; top: 0; left: 0;
+  width: var(--nav-w); height: 100vh;
+  background: var(--card);
+  border-right: 1px solid var(--border);
+  padding: 2rem 1.25rem;
+  display: flex; flex-direction: column;
+  z-index: 100;
+}
+.nav-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.3rem; color: var(--primary);
+  margin-bottom: 0.2rem;
+  padding: 0 0.5rem;
+}
+.nav-tagline { font-size: 11px; color: var(--text3); padding: 0 0.5rem; margin-bottom: 2rem; }
+.nav-links { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+.nav-link {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: var(--radius-sm);
+  cursor: pointer; font-size: 14px; font-weight: 400;
+  color: var(--text2); transition: all 0.15s;
+  border: none; background: none; width: 100%; text-align: left;
+}
+.nav-link:hover { background: var(--bg2); color: var(--text); }
+.nav-link.active { background: var(--primary-light); color: var(--primary); font-weight: 500; }
+.nav-link .icon { font-size: 17px; width: 20px; text-align: center; }
+.nav-bottom { margin-top: auto; }
+.nav-key-btn {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 12px; width: 100%;
+  background: none; border: 1px solid var(--border);
+  border-radius: var(--radius-sm); cursor: pointer;
+  font-size: 12px; color: var(--text3);
+  font-family: 'DM Sans', sans-serif;
+  transition: all 0.15s;
+}
+.nav-key-btn:hover { border-color: var(--border2); color: var(--text2); }
+
+main#content {
+  margin-left: var(--nav-w);
+  padding: 2.5rem 2rem;
+  max-width: 860px;
+}
+
+/* ── PAGE HEADER ── */
+.page-header { margin-bottom: 2rem; }
+.page-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.8rem; font-weight: 500;
+  color: var(--text); margin-bottom: 4px;
+}
+.page-sub { font-size: 14px; color: var(--text3); }
+
+/* ── CARDS ── */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  box-shadow: var(--shadow);
+}
+.card-title {
+  font-size: 11px; font-weight: 500;
+  text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--text3); margin-bottom: 1rem;
+}
+.card-divider { border: none; border-top: 1px solid var(--border); margin: 1rem 0; }
+
+/* ── FORM ELEMENTS ── */
+.form-group { margin-bottom: 1rem; }
+.form-label { font-size: 13px; color: var(--text2); display: block; margin-bottom: 5px; }
+.form-input {
+  width: 100%; padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 14px; font-family: 'DM Sans', sans-serif;
+  color: var(--text); background: var(--bg2);
+  outline: none; transition: all 0.2s;
+}
+.form-input:focus { border-color: var(--primary); background: #fff; }
+.form-input-sm { padding: 8px 10px; font-size: 13px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+textarea.form-input { resize: vertical; min-height: 70px; }
+
+/* ── CHIPS ── */
+.chips { display: flex; flex-wrap: wrap; gap: 7px; }
+.chip {
+  padding: 6px 14px; border-radius: 20px;
+  border: 1px solid var(--border);
+  font-size: 13px; cursor: pointer;
+  color: var(--text2); background: var(--bg2);
+  transition: all 0.15s; white-space: nowrap;
+}
+.chip:hover { border-color: var(--border2); color: var(--text); }
+.chip.on { background: var(--primary-light); border-color: var(--primary); color: var(--primary); font-weight: 500; }
+.chip.on-accent { background: var(--accent-light); border-color: var(--accent); color: var(--accent); font-weight: 500; }
+.chip.on-warn { background: #FEF3ED; border-color: #E8834A; color: #C4622D; font-weight: 500; }
+.chip-single .chip.on { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+/* ── MEMBER CARDS ── */
+.members-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+.member-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 12px;
+}
+.member-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.member-avatar {
+  width: 34px; height: 34px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 500;
+}
+.av-adult { background: #DDEAF0; color: #2D5F7A; }
+.av-child { background: #E8F5E4; color: #3A6B2F; }
+.member-name { font-size: 13px; font-weight: 500; }
+.rm-btn {
+  background: none; border: none; cursor: pointer;
+  color: var(--text3); font-size: 18px; line-height: 1;
+  padding: 2px 6px; border-radius: 4px;
+  transition: all 0.15s;
+}
+.rm-btn:hover { background: #FEE; color: #C44; }
+.add-row { display: flex; gap: 8px; }
+.btn-add {
+  flex: 1; padding: 10px;
+  background: none; border: 1px dashed var(--border2);
+  border-radius: var(--radius-sm); cursor: pointer;
+  font-size: 13px; color: var(--text3);
+  font-family: 'DM Sans', sans-serif;
+  transition: all 0.15s;
+}
+.btn-add:hover { background: var(--bg2); color: var(--text2); border-color: var(--border2); }
+
+/* ── MACRO FIELDS ── */
+.macro-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.macro-item { position: relative; }
+.macro-item input { padding-right: 38px; }
+.macro-unit {
+  position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+  font-size: 11px; color: var(--text3); pointer-events: none;
+}
+
+/* ── GENERATE BUTTON ── */
+.btn-generate {
+  width: 100%; padding: 15px;
+  background: var(--primary); color: #fff;
+  border: none; border-radius: var(--radius-sm);
+  font-size: 16px; font-weight: 500;
+  cursor: pointer; font-family: 'DM Sans', sans-serif;
+  transition: all 0.2s; margin-top: 4px;
+  letter-spacing: 0.01em;
+}
+.btn-generate:hover { background: #2d5039; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(61,107,79,0.3); }
+.btn-generate:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+
+/* ── LOADING ── */
+.loading {
+  text-align: center; padding: 3rem 1rem;
+  animation: fadeUp 0.3s ease;
+}
+.spinner {
+  width: 36px; height: 36px;
+  border: 3px solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 1rem;
+}
+.loading-msg { font-size: 14px; color: var(--text3); }
+
+/* ── RESULT CARD ── */
+.result-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  animation: fadeUp 0.4s ease;
+  box-shadow: var(--shadow);
+  margin-top: 1.5rem;
+}
+.result-header {
+  background: linear-gradient(135deg, #2d5039 0%, #3D6B4F 100%);
+  padding: 1.75rem;
+  color: #fff;
+}
+.result-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem; font-weight: 500;
+  margin-bottom: 6px;
+}
+.result-desc { font-size: 14px; opacity: 0.85; line-height: 1.5; margin-bottom: 1rem; }
+.result-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+.tag {
+  padding: 4px 12px; border-radius: 20px;
+  font-size: 12px; font-weight: 500;
+  background: rgba(255,255,255,0.18);
+  color: #fff;
+}
+.result-body { padding: 1.5rem; }
+.result-section { margin-bottom: 1.5rem; }
+.result-section-title {
+  font-size: 12px; font-weight: 500;
+  text-transform: uppercase; letter-spacing: 0.07em;
+  color: var(--text3); margin-bottom: 0.75rem;
+}
+
+/* ── MACRO BARS ── */
+.macro-bars { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.macro-bar-item { }
+.macro-bar-label {
+  display: flex; justify-content: space-between;
+  font-size: 12px; margin-bottom: 4px;
+}
+.macro-bar-name { color: var(--text2); }
+.macro-bar-val { color: var(--text); font-weight: 500; }
+.macro-bar-pct { color: var(--text3); font-size: 11px; }
+.bar-track {
+  height: 6px; background: var(--bg2);
+  border-radius: 3px; overflow: hidden;
+}
+.bar-fill {
+  height: 100%; border-radius: 3px;
+  transition: width 0.8s cubic-bezier(0.4,0,0.2,1);
+  width: 0;
+}
+
+/* ── INGREDIENTS TABLE ── */
+.ing-table { width: 100%; border-collapse: collapse; }
+.ing-table th {
+  font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em;
+  color: var(--text3); font-weight: 500; padding: 6px 10px;
+  background: var(--bg2); text-align: left;
+}
+.ing-table td {
+  padding: 8px 10px; font-size: 13px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+}
+.ing-table tr:last-child td { border-bottom: none; }
+.ing-name { font-weight: 400; }
+.ing-qty { color: var(--text2); text-align: right; }
+.ing-qty-adult { color: #2D5F7A; font-weight: 500; }
+.ing-qty-child { color: #3A6B2F; font-weight: 500; }
+
+/* ── STEPS ── */
+.steps { display: flex; flex-direction: column; gap: 10px; }
+.step { display: flex; gap: 12px; align-items: flex-start; }
+.step-num {
+  min-width: 24px; height: 24px;
+  background: var(--primary-light); color: var(--primary);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 500; margin-top: 1px;
+  flex-shrink: 0;
+}
+.step-text { font-size: 14px; line-height: 1.6; color: var(--text); }
+
+/* ── INFO CARDS ── */
+.info-card {
+  border-radius: var(--radius-sm); padding: 12px 14px;
+  font-size: 13px; line-height: 1.6;
+  margin-bottom: 10px;
+}
+.info-card.green { background: var(--success-bg); color: var(--success); border-left: 3px solid var(--success); }
+.info-card.amber { background: #FEF9ED; color: #8A6000; border-left: 3px solid #D4A017; }
+.info-card-title { font-weight: 500; margin-bottom: 3px; }
+
+/* ── HISTORY ── */
+.history-list { display: flex; flex-direction: column; gap: 8px; }
+.history-item {
+  display: flex; align-items: center; gap: 14px;
+  padding: 12px 14px;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); cursor: pointer;
+  transition: all 0.15s;
+}
+.history-item:hover { border-color: var(--primary); background: var(--primary-light); }
+.history-emoji { font-size: 22px; }
+.history-info { flex: 1; }
+.history-name { font-size: 14px; font-weight: 500; }
+.history-meta { font-size: 12px; color: var(--text3); margin-top: 2px; }
+.history-kcal { font-size: 13px; font-weight: 500; color: var(--primary); white-space: nowrap; }
+.btn-clear-hist {
+  background: none; border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 8px 16px;
+  font-size: 13px; color: var(--text3); cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: all 0.15s; margin-bottom: 1rem;
+}
+.btn-clear-hist:hover { border-color: #C44; color: #C44; }
+
+/* ── SAVE FEEDBACK ── */
+.save-feedback {
+  display: inline-block; padding: 6px 16px;
+  background: var(--success-bg); color: var(--success);
+  border-radius: 20px; font-size: 13px; font-weight: 500;
+  opacity: 0; transition: opacity 0.3s;
+}
+.save-feedback.show { opacity: 1; }
+
+/* ── SECTION SAVE ROW ── */
+.save-row { display: flex; align-items: center; gap: 12px; margin-top: 1.25rem; }
+.btn-save {
+  padding: 10px 24px;
+  background: var(--primary); color: #fff;
+  border: none; border-radius: var(--radius-sm);
+  font-size: 14px; font-weight: 500; cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: all 0.2s;
+}
+.btn-save:hover { background: #2d5039; }
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── MOBILE NAV ── */
+#mobile-nav {
+  display: none;
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: var(--card);
+  border-top: 1px solid var(--border);
+  padding: 8px 0 env(safe-area-inset-bottom, 8px);
+  z-index: 100;
+}
+.mob-nav-links { display: flex; }
+.mob-nav-link {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; gap: 3px; padding: 6px 4px;
+  cursor: pointer; font-size: 10px; color: var(--text3);
+  border: none; background: none; font-family: 'DM Sans', sans-serif;
+  transition: color 0.15s;
+}
+.mob-nav-link .icon { font-size: 20px; }
+.mob-nav-link.active { color: var(--primary); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 680px) {
+  nav#sidebar { display: none; }
+  #mobile-nav { display: block; }
+  main#content { margin-left: 0; padding: 1.25rem 1rem 5rem; max-width: 100%; }
+  .macro-grid { grid-template-columns: 1fr 1fr; }
+  .macro-bars { grid-template-columns: 1fr; }
+  .form-row { grid-template-columns: 1fr; }
+  .members-grid { grid-template-columns: 1fr; }
+}
+
+/* ── SECTION PAGES ── */
+.section-page { display: none; animation: fadeUp 0.3s ease; }
+.section-page.active { display: block; }
+
+/* ── NUTRITION SECTION HEADERS ── */
+.nutr-section {
+  margin-bottom: 1.25rem;
+}
+.nutr-section-label {
+  font-size: 11px; font-weight: 500; text-transform: uppercase;
+  letter-spacing: 0.1em; color: var(--accent);
+  margin-bottom: 0.75rem; display: flex; align-items: center; gap: 8px;
+}
+.nutr-section-label::after {
+  content: ''; flex: 1; height: 1px; background: var(--border);
+}
+
+/* ── EMPTY STATE ── */
+.empty-state {
+  text-align: center; padding: 3rem 1rem;
+  color: var(--text3);
+}
+.empty-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+.empty-text { font-size: 14px; }
+
+/* ── RESULT AGAIN BTN ── */
+.btn-again {
+  width: 100%; padding: 12px;
+  background: none; border: 1px solid var(--primary);
+  color: var(--primary); border-radius: var(--radius-sm);
+  font-size: 14px; font-weight: 500; cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: all 0.2s; margin-top: 1rem;
+}
+.btn-again:hover { background: var(--primary-light); }
+
+/* NUTRIÇÃO - inline number inputs */
+.num-wrap { position: relative; display: flex; align-items: center; }
+.num-wrap input[type=number] { -moz-appearance: textfield; }
+.num-wrap input::-webkit-outer-spin-button,
+.num-wrap input::-webkit-inner-spin-button { -webkit-appearance: none; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ API KEY SCREEN ═══════════════ -->
+<div id="api-screen">
+  <div class="api-card">
+    <div class="api-logo">Mesa Familiar</div>
+    <div class="api-sub">Planejador de refeições com IA</div>
+    <label class="api-label">Chave de API da Anthropic</label>
+    <div class="api-input-wrap">
+      <input type="password" id="api-key-input" placeholder="sk-ant-...">
+      <button class="eye-btn" onclick="toggleEye()" title="Mostrar/ocultar">👁</button>
+    </div>
+    <p class="api-hint">🔒 Sua chave fica salva apenas neste navegador. Nunca é enviada a servidores externos.</p>
+    <button class="btn-primary" onclick="saveApiKey()">Salvar e continuar →</button>
+  </div>
+</div>
+
+<!-- ═══════════════ APP ═══════════════ -->
+<div id="app">
+
+  <!-- Sidebar Desktop -->
+  <nav id="sidebar">
+    <div class="nav-logo">Mesa Familiar</div>
+    <div class="nav-tagline">Planejador com IA</div>
+    <div class="nav-links">
+      <button class="nav-link active" onclick="goTo('home')" id="nl-home">
+        <span class="icon">🏠</span> Início
+      </button>
+      <button class="nav-link" onclick="goTo('familia')" id="nl-familia">
+        <span class="icon">👨‍👩‍👧‍👦</span> Família
+      </button>
+      <button class="nav-link" onclick="goTo('nutricao')" id="nl-nutricao">
+        <span class="icon">🥗</span> Nutrição
+      </button>
+      <button class="nav-link" onclick="goTo('historico')" id="nl-historico">
+        <span class="icon">📖</span> Histórico
+      </button>
+    </div>
+    <div class="nav-bottom">
+      <button class="nav-key-btn" onclick="changeKey()">🔑 Trocar chave de API</button>
+    </div>
+  </nav>
+
+  <!-- Mobile Nav -->
+  <nav id="mobile-nav">
+    <div class="mob-nav-links">
+      <button class="mob-nav-link active" onclick="goTo('home')" id="mn-home"><span class="icon">🏠</span>Início</button>
+      <button class="mob-nav-link" onclick="goTo('familia')" id="mn-familia"><span class="icon">👨‍👩‍👧‍👦</span>Família</button>
+      <button class="mob-nav-link" onclick="goTo('nutricao')" id="mn-nutricao"><span class="icon">🥗</span>Nutrição</button>
+      <button class="mob-nav-link" onclick="goTo('historico')" id="mn-historico"><span class="icon">📖</span>Histórico</button>
+    </div>
+  </nav>
+
+  <main id="content">
+
+    <!-- ══ HOME ══ -->
+    <div class="section-page active" id="page-home">
+      <div class="page-header">
+        <div class="page-title">Gerar refeição</div>
+        <div class="page-sub">Configure e deixe a IA montar o prato ideal para sua família</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Tipo de refeição</div>
+        <div class="chips chip-single" id="meal-type-chips">
+          <span class="chip on" data-val="Almoço">🍽 Almoço</span>
+          <span class="chip" data-val="Jantar">🌙 Jantar</span>
+          <span class="chip" data-val="Café da manhã">☀️ Café da manhã</span>
+          <span class="chip" data-val="Lanche">🥪 Lanche</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Culinária</div>
+        <div class="chips" id="cuisine-chips">
+          <span class="chip on" data-val="Brasileira">🇧🇷 Brasileira</span>
+          <span class="chip" data-val="Japonesa">🇯🇵 Japonesa</span>
+          <span class="chip" data-val="Mediterrânea">🫒 Mediterrânea</span>
+          <span class="chip" data-val="Árabe">🌙 Árabe</span>
+          <span class="chip" data-val="Italiana">🇮🇹 Italiana</span>
+          <span class="chip" data-val="Mexicana">🇲🇽 Mexicana</span>
+          <span class="chip" data-val="Indiana">🇮🇳 Indiana</span>
+          <span class="chip" data-val="Asiática">🥢 Asiática</span>
+          <span class="chip" data-val="Fusão">✨ Fusão</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Restrições alimentares</div>
+        <div class="chips" id="restrict-chips">
+          <span class="chip" data-val="Sem glúten">Sem glúten</span>
+          <span class="chip" data-val="Sem lactose">Sem lactose</span>
+          <span class="chip" data-val="Vegetariano">Vegetariano</span>
+          <span class="chip" data-val="Vegano">Vegano</span>
+          <span class="chip" data-val="Sem frutos do mar">Sem frutos do mar</span>
+          <span class="chip" data-val="Sem ovos">Sem ovos</span>
+          <span class="chip" data-val="Sem oleaginosas">Sem oleaginosas</span>
+        </div>
+      </div>
+
+      <button class="btn-generate" id="gen-btn" onclick="generateMeal()">
+        Gerar cardápio com IA ✦
+      </button>
+
+      <div id="result-area"></div>
+    </div>
+
+    <!-- ══ FAMÍLIA ══ -->
+    <div class="section-page" id="page-familia">
+      <div class="page-header">
+        <div class="page-title">Minha família</div>
+        <div class="page-sub">Configure os membros para cálculo das porções</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Membros</div>
+        <div class="members-grid" id="members-grid"></div>
+        <div class="add-row">
+          <button class="btn-add" onclick="addMember('adulto')">+ Adulto</button>
+          <button class="btn-add" onclick="addMember('criança')">+ Criança</button>
+        </div>
+        <div class="save-row">
+          <button class="btn-save" onclick="saveFamily()">Salvar família</button>
+          <span class="save-feedback" id="fam-feedback">✓ Salvo!</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ NUTRIÇÃO ══ -->
+    <div class="section-page" id="page-nutricao">
+      <div class="page-header">
+        <div class="page-title">Diretrizes nutricionais</div>
+        <div class="page-sub">Valores pré-carregados — ajuste conforme sua necessidade</div>
+      </div>
+
+      <div class="card">
+        <div class="nutr-section">
+          <div class="nutr-section-label">Calorias diárias</div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Meta por adulto (kcal/dia)</label>
+              <div class="num-wrap">
+                <input type="number" class="form-input" id="n-kcal-adult" value="1800">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Meta por criança (kcal/dia)</label>
+              <div class="num-wrap">
+                <input type="number" class="form-input" id="n-kcal-child" value="1400">
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Observação calórica</label>
+            <input type="text" class="form-input" id="n-kcal-obs" value="Déficit controlado para recomposição corporal">
+          </div>
+        </div>
+
+        <hr class="card-divider">
+
+        <div class="nutr-section">
+          <div class="nutr-section-label">Macronutrientes por adulto/dia</div>
+          <div class="macro-grid">
+            <div class="form-group macro-item">
+              <label class="form-label">Proteínas</label>
+              <input type="number" class="form-input" id="n-prot" value="140">
+              <span class="macro-unit">g</span>
+            </div>
+            <div class="form-group macro-item">
+              <label class="form-label">Carboidratos</label>
+              <input type="number" class="form-input" id="n-carb" value="160">
+              <span class="macro-unit">g</span>
+            </div>
+            <div class="form-group macro-item">
+              <label class="form-label">Gorduras</label>
+              <input type="number" class="form-input" id="n-fat" value="60">
+              <span class="macro-unit">g</span>
+            </div>
+            <div class="form-group macro-item">
+              <label class="form-label">Fibras</label>
+              <input type="number" class="form-input" id="n-fiber" value="25">
+              <span class="macro-unit">g</span>
+            </div>
+          </div>
+        </div>
+
+        <hr class="card-divider">
+
+        <div class="nutr-section">
+          <div class="nutr-section-label">Hidratação diária</div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Adulto (mL/dia)</label>
+              <input type="number" class="form-input" id="n-water-adult" value="3000">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Criança (mL/dia)</label>
+              <input type="number" class="form-input" id="n-water-child" value="1500">
+            </div>
+          </div>
+        </div>
+
+        <hr class="card-divider">
+
+        <div class="nutr-section">
+          <div class="nutr-section-label">Priorizar</div>
+          <div class="chips" id="priority-chips">
+            <span class="chip on" data-val="Proteínas magras (frango, peixe, ovo, patinho)">🥩 Proteínas magras</span>
+            <span class="chip on" data-val="Carboidratos complexos (arroz, batata doce, aveia, quinoa)">🌾 Carboidratos complexos</span>
+            <span class="chip on" data-val="Leguminosas (feijão, lentilha, grão-de-bico)">🫘 Leguminosas</span>
+            <span class="chip on" data-val="Verduras e legumes à vontade">🥦 Verduras e legumes</span>
+            <span class="chip on" data-val="Frutas de baixo índice glicêmico (morango, kiwi, maçã, mamão)">🍓 Frutas low IG</span>
+            <span class="chip on" data-val="Gorduras boas com moderação (azeite, abacate, castanhas)">🥑 Gorduras boas</span>
+            <span class="chip on" data-val="Alimentos pró-intestino e ricos em fibras">🌿 Pró-intestino</span>
+          </div>
+        </div>
+
+        <hr class="card-divider">
+
+        <div class="nutr-section">
+          <div class="nutr-section-label">Evitar</div>
+          <div class="chips" id="avoid-chips">
+            <span class="chip on-warn" data-val="Frituras e carnes gordurosas">🚫 Frituras</span>
+            <span class="chip on-warn" data-val="Açúcar refinado e carboidratos simples">🚫 Açúcar refinado</span>
+            <span class="chip on-warn" data-val="Ultraprocessados (gordura vegetal hidrogenada, xarope de milho, corantes)">🚫 Ultraprocessados</span>
+            <span class="chip on-warn" data-val="Molhos prontos e temperos industrializados">🚫 Molhos prontos</span>
+            <span class="chip on-warn" data-val="Excesso de sódio">🚫 Excesso de sódio</span>
+          </div>
+        </div>
+
+        <hr class="card-divider">
+
+        <div class="nutr-section">
+          <div class="nutr-section-label">Cuidados de saúde</div>
+          <div class="chips" id="health-chips">
+            <span class="chip" data-val="Saúde intestinal / disbiose / constipação">🦠 Saúde intestinal</span>
+            <span class="chip" data-val="Risco cardiovascular elevado">❤️ Risco cardiovascular</span>
+            <span class="chip" data-val="Controle de gordura visceral">📊 Gordura visceral</span>
+            <span class="chip" data-val="Controle glicêmico / pré-diabetes">🩸 Controle glicêmico</span>
+            <span class="chip" data-val="Intolerância à lactose">🥛 Intolerância lactose</span>
+            <span class="chip" data-val="Doença celíaca / sensibilidade ao glúten">🌾 Celíaca/glúten</span>
+            <span class="chip" data-val="Hipertensão / controle de sódio">💊 Hipertensão</span>
+            <span class="chip" data-val="Crianças em fase de crescimento (cálcio e ferro)">👶 Crescimento infantil</span>
+          </div>
+        </div>
+
+        <hr class="card-divider">
+
+        <div class="nutr-section">
+          <div class="nutr-section-label">Suplementos em uso</div>
+          <input type="text" class="form-input" id="n-suplem"
+            value="Creatina 5g/dia, Whey protein isolado, Magnésio à noite, Probiótico pela manhã">
+        </div>
+
+        <hr class="card-divider">
+
+        <div class="nutr-section">
+          <div class="nutr-section-label">Observações gerais</div>
+          <textarea class="form-input" id="n-obs">Mastigar devagar. 1 refeição livre por semana permitida. Aeróbico após treino de força.</textarea>
+        </div>
+
+        <div class="save-row">
+          <button class="btn-save" onclick="saveNutrition()">Salvar diretrizes</button>
+          <span class="save-feedback" id="nutr-feedback">✓ Salvo!</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ HISTÓRICO ══ -->
+    <div class="section-page" id="page-historico">
+      <div class="page-header">
+        <div class="page-title">Histórico</div>
+        <div class="page-sub">Últimos pratos gerados</div>
+      </div>
+      <div id="history-area"></div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+// ══════════════════════════════════════
+// STATE & DEFAULTS
+// ══════════════════════════════════════
+const P = 'mealplanner_';
+let currentMeal = null;
+
+const DEFAULT_NUTRITION = {
+  kcal_adult: 1800, kcal_child: 1400,
+  kcal_obs: 'Déficit controlado para recomposição corporal',
+  prot: 140, carb: 160, fat: 60, fiber: 25,
+  water_adult: 3000, water_child: 1500,
+  priorities: [
+    'Proteínas magras (frango, peixe, ovo, patinho)',
+    'Carboidratos complexos (arroz, batata doce, aveia, quinoa)',
+    'Leguminosas (feijão, lentilha, grão-de-bico)',
+    'Verduras e legumes à vontade',
+    'Frutas de baixo índice glicêmico (morango, kiwi, maçã, mamão)',
+    'Gorduras boas com moderação (azeite, abacate, castanhas)',
+    'Alimentos pró-intestino e ricos em fibras'
+  ],
+  avoid: [
+    'Frituras e carnes gordurosas',
+    'Açúcar refinado e carboidratos simples',
+    'Ultraprocessados (gordura vegetal hidrogenada, xarope de milho, corantes)',
+    'Molhos prontos e temperos industrializados',
+    'Excesso de sódio'
+  ],
+  health: [],
+  suplem: 'Creatina 5g/dia, Whey protein isolado, Magnésio à noite, Probiótico pela manhã',
+  obs: 'Mastigar devagar. 1 refeição livre por semana permitida. Aeróbico após treino de força.'
+};
+
+const DEFAULT_FAMILY = [
+  { id: 1, tipo: 'adulto', nome: 'Adulto 1', idade: '' },
+  { id: 2, tipo: 'adulto', nome: 'Adulto 2', idade: '' },
+  { id: 3, tipo: 'criança', nome: 'Criança 1', idade: '' },
+  { id: 4, tipo: 'criança', nome: 'Criança 2', idade: '' }
+];
+
+let members = [];
+let nextId = 10;
+
+// ══════════════════════════════════════
+// STORAGE HELPERS
+// ══════════════════════════════════════
+function ls(key, val) {
+  if (val === undefined) { try { return JSON.parse(localStorage.getItem(P + key)); } catch { return null; } }
+  localStorage.setItem(P + key, JSON.stringify(val));
+}
+
+function loadNutrition() {
+  return ls('nutrition') || DEFAULT_NUTRITION;
+}
+function loadFamily() {
+  return ls('family') || DEFAULT_FAMILY;
+}
+function loadHistory() {
+  return ls('history') || [];
+}
+
+// ══════════════════════════════════════
+// API KEY
+// ══════════════════════════════════════
+function toggleEye() {
+  const inp = document.getElementById('api-key-input');
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+}
+
+function saveApiKey() {
+  const key = document.getElementById('api-key-input').value.trim();
+  if (!key.startsWith('sk-ant-') && !key.startsWith('sk-')) {
+    alert('Chave inválida. Deve começar com "sk-ant-"');
+    return;
+  }
+  ls('apikey', key);
+  initApp();
+}
+
+function changeKey() {
+  ls('apikey', null);
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('api-screen').style.display = 'flex';
+  document.getElementById('api-key-input').value = '';
+}
+
+// ══════════════════════════════════════
+// INIT
+// ══════════════════════════════════════
+function initApp() {
+  const key = ls('apikey');
+  if (!key) {
+    document.getElementById('api-screen').style.display = 'flex';
+    document.getElementById('app').style.display = 'none';
+    return;
+  }
+  document.getElementById('api-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  loadFamilyUI();
+  loadNutritionUI();
+}
+
+// ══════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════
+function goTo(page) {
+  document.querySelectorAll('.section-page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-link, .mob-nav-link').forEach(l => l.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  const ids = ['nl-' + page, 'mn-' + page];
+  ids.forEach(id => { const el = document.getElementById(id); if (el) el.classList.add('active'); });
+  if (page === 'historico') renderHistory();
+  window.scrollTo(0, 0);
+}
+
+// ══════════════════════════════════════
+// CHIPS HELPERS
+// ══════════════════════════════════════
+function initChips(containerId, multi = true) {
+  const container = document.getElementById(containerId);
+  container.querySelectorAll('.chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      if (multi) {
+        chip.classList.toggle('on');
+        chip.classList.toggle('on-warn', containerId === 'avoid-chips' && chip.classList.contains('on'));
+      } else {
+        container.querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
+        chip.classList.add('on');
+      }
+    });
+  });
+}
+
+function getChipVals(containerId) {
+  return [...document.querySelectorAll(`#${containerId} .chip.on, #${containerId} .chip.on-warn`)]
+    .map(c => c.dataset.val);
+}
+
+function setChipVals(containerId, vals) {
+  document.querySelectorAll(`#${containerId} .chip`).forEach(chip => {
+    const isOn = vals.includes(chip.dataset.val);
+    chip.classList.toggle('on', isOn && containerId !== 'avoid-chips' && containerId !== 'health-chips');
+    chip.classList.toggle('on-warn', isOn && containerId === 'avoid-chips');
+    if (containerId === 'health-chips' && isOn) chip.classList.add('on');
+  });
+}
+
+// ══════════════════════════════════════
+// FAMILY
+// ══════════════════════════════════════
+function loadFamilyUI() {
+  members = loadFamily().map(m => ({ ...m }));
+  nextId = Math.max(...members.map(m => m.id), 9) + 1;
+  renderMembers();
+}
+
+function renderMembers() {
+  const grid = document.getElementById('members-grid');
+  grid.innerHTML = members.map(m => `
+    <div class="member-card">
+      <div class="member-head">
+        <div style="display:flex;align-items:center;gap:9px;">
+          <div class="member-avatar ${m.tipo === 'adulto' ? 'av-adult' : 'av-child'}">
+            ${m.tipo === 'adulto' ? 'A' : 'C'}
+          </div>
+          <span class="member-name">${m.nome}</span>
+        </div>
+        ${members.length > 1 ? `<button class="rm-btn" onclick="removeMember(${m.id})">×</button>` : ''}
+      </div>
+      <div class="form-group" style="margin-bottom:8px;">
+        <label class="form-label" style="font-size:12px;">Nome</label>
+        <input class="form-input form-input-sm" type="text" value="${m.nome}"
+          oninput="updateMember(${m.id},'nome',this.value)" placeholder="${m.nome}">
+      </div>
+      <div class="form-group" style="margin-bottom:0;">
+        <label class="form-label" style="font-size:12px;">Idade</label>
+        <input class="form-input form-input-sm" type="number" value="${m.idade || ''}"
+          oninput="updateMember(${m.id},'idade',this.value)" placeholder="—">
+      </div>
+    </div>
+  `).join('');
+}
+
+function updateMember(id, field, val) {
+  const m = members.find(x => x.id === id);
+  if (m) m[field] = val;
+}
+
+function addMember(tipo) {
+  const count = members.filter(m => m.tipo === tipo).length + 1;
+  const nome = tipo === 'adulto' ? `Adulto ${count}` : `Criança ${count}`;
+  members.push({ id: nextId++, tipo, nome, idade: '' });
+  renderMembers();
+}
+
+function removeMember(id) {
+  if (members.length <= 1) return;
+  members = members.filter(m => m.id !== id);
+  renderMembers();
+}
+
+function saveFamily() {
+  ls('family', members);
+  showFeedback('fam-feedback');
+}
+
+// ══════════════════════════════════════
+// NUTRITION
+// ══════════════════════════════════════
+function loadNutritionUI() {
+  const n = loadNutrition();
+  document.getElementById('n-kcal-adult').value = n.kcal_adult || 1800;
+  document.getElementById('n-kcal-child').value = n.kcal_child || 1400;
+  document.getElementById('n-kcal-obs').value = n.kcal_obs || DEFAULT_NUTRITION.kcal_obs;
+  document.getElementById('n-prot').value = n.prot || 140;
+  document.getElementById('n-carb').value = n.carb || 160;
+  document.getElementById('n-fat').value = n.fat || 60;
+  document.getElementById('n-fiber').value = n.fiber || 25;
+  document.getElementById('n-water-adult').value = n.water_adult || 3000;
+  document.getElementById('n-water-child').value = n.water_child || 1500;
+  document.getElementById('n-suplem').value = n.suplem || DEFAULT_NUTRITION.suplem;
+  document.getElementById('n-obs').value = n.obs || DEFAULT_NUTRITION.obs;
+  setChipVals('priority-chips', n.priorities || DEFAULT_NUTRITION.priorities);
+  setChipVals('avoid-chips', n.avoid || DEFAULT_NUTRITION.avoid);
+  setChipVals('health-chips', n.health || []);
+}
+
+function saveNutrition() {
+  const n = {
+    kcal_adult: +document.getElementById('n-kcal-adult').value,
+    kcal_child: +document.getElementById('n-kcal-child').value,
+    kcal_obs: document.getElementById('n-kcal-obs').value,
+    prot: +document.getElementById('n-prot').value,
+    carb: +document.getElementById('n-carb').value,
+    fat: +document.getElementById('n-fat').value,
+    fiber: +document.getElementById('n-fiber').value,
+    water_adult: +document.getElementById('n-water-adult').value,
+    water_child: +document.getElementById('n-water-child').value,
+    suplem: document.getElementById('n-suplem').value,
+    obs: document.getElementById('n-obs').value,
+    priorities: getChipVals('priority-chips'),
+    avoid: getChipVals('avoid-chips'),
+    health: getChipVals('health-chips')
+  };
+  ls('nutrition', n);
+  showFeedback('nutr-feedback');
+}
+
+// ══════════════════════════════════════
+// GENERATE
+// ══════════════════════════════════════
+async function generateMeal() {
+  const apiKey = ls('apikey');
+  if (!apiKey) { alert('Configure sua chave de API primeiro.'); return; }
+
+  const cuisines = getChipVals('cuisine-chips');
+  if (cuisines.length === 0) { alert('Selecione ao menos uma culinária.'); return; }
+
+  const mealType = getChipVals('meal-type-chips')[0] || 'Almoço';
+  const restrictions = getChipVals('restrict-chips');
+  const fam = loadFamily();
+  const nut = loadNutrition();
+
+  const adults = fam.filter(m => m.tipo === 'adulto');
+  const children = fam.filter(m => m.tipo === 'criança');
+  const nAdults = adults.length;
+  const nChildren = children.length;
+
+  const btn = document.getElementById('gen-btn');
+  btn.disabled = true;
+
+  const msgs = [
+    'Consultando o nutricionista virtual...',
+    'Calculando macros e porções...',
+    'Escolhendo os melhores ingredientes...',
+    'Montando a receita perfeita...'
+  ];
+  let mi = 0;
+  const area = document.getElementById('result-area');
+  area.innerHTML = `<div class="loading"><div class="spinner"></div><div class="loading-msg" id="lmsg">${msgs[0]}</div></div>`;
+  const lmsg = document.getElementById('lmsg');
+  const interval = setInterval(() => { mi = (mi + 1) % msgs.length; if(lmsg) lmsg.textContent = msgs[mi]; }, 2200);
+
+  const PROMPT = `Você é um nutricionista e chef especialista em alimentação saudável para famílias.
+
+Crie uma receita completa de ${mealType} para uma família com ${nAdults} adulto(s) e ${nChildren} criança(s).
+${adults.map(a => `Adulto: ${a.nome}${a.idade ? `, ${a.idade} anos` : ''}`).join('; ')}
+${children.map(c => `Criança: ${c.nome}${c.idade ? `, ${c.idade} anos` : ''}`).join('; ')}
+
+PERFIL NUTRICIONAL DA FAMÍLIA:
+- Meta calórica adulto: ${nut.kcal_adult} kcal/dia (esta refeição deve ser ~${Math.round(nut.kcal_adult / 4)} kcal)
+- Meta calórica criança: ${nut.kcal_child} kcal/dia (esta refeição deve ser ~${Math.round(nut.kcal_child / 4)} kcal)
+- Observação: ${nut.kcal_obs}
+- Proteínas/adulto/dia: ${nut.prot}g (esta refeição: ~${Math.round(nut.prot / 4)}g)
+- Carboidratos/adulto/dia: ${nut.carb}g (esta refeição: ~${Math.round(nut.carb / 4)}g)
+- Gorduras/adulto/dia: ${nut.fat}g (esta refeição: ~${Math.round(nut.fat / 4)}g)
+- Fibras/adulto/dia: ${nut.fiber}g
+
+PRIORIZAR: ${nut.priorities.join(', ')}
+EVITAR: ${nut.avoid.join(', ')}
+${nut.health.length ? `CUIDADOS DE SAÚDE: ${nut.health.join(', ')}` : ''}
+${nut.suplem ? `SUPLEMENTOS EM USO: ${nut.suplem}` : ''}
+${nut.obs ? `OBSERVAÇÕES GERAIS: ${nut.obs}` : ''}
+
+CULINÁRIA: ${cuisines.join(' ou ')}
+${restrictions.length ? `RESTRIÇÕES: ${restrictions.join(', ')}` : ''}
+
+INSTRUÇÕES:
+- Calcule quantidades separadas para adultos e crianças
+- Ingredientes em gramas ou medidas caseiras precisas
+- Modo de preparo claro e prático
+- Dica nutricional específica para este perfil familiar
+
+Responda APENAS com JSON válido, sem markdown, sem texto extra:
+{
+  "nome": "nome do prato",
+  "culinaria": "culinária",
+  "tempo_preparo": "X minutos",
+  "kcal_adulto": numero,
+  "kcal_crianca": numero,
+  "proteinas_g": numero,
+  "carbos_g": numero,
+  "gorduras_g": numero,
+  "fibras_g": numero,
+  "descricao": "descrição apetitosa em 1 frase",
+  "ingredientes": [
+    { "nome": "ingrediente", "quantidade_adulto": "Xg ou X unid", "quantidade_crianca": "Xg ou X unid" }
+  ],
+  "passos": ["passo 1 detalhado", "passo 2", "passo 3"],
+  "dica_nutricional": "dica específica para esta família",
+  "aderencia_diretrizes": "como este prato respeita as metas calóricas e de macros"
+}`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 2000,
+        messages: [{ role: 'user', content: PROMPT }]
+      })
+    });
+
+    clearInterval(interval);
+    const data = await res.json();
+
+    if (!res.ok) throw new Error(data.error?.message || `Erro ${res.status}`);
+
+    const text = data.content.map(b => b.text || '').join('');
+    const clean = text.replace(/```json|```/g, '').trim();
+    const meal = JSON.parse(clean);
+
+    currentMeal = { ...meal, mealType, cuisines, timestamp: Date.now() };
+    saveToHistory(currentMeal);
+    renderResult(meal, nut, nAdults, nChildren);
+    document.getElementById('result-area').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  } catch (err) {
+    clearInterval(interval);
+    area.innerHTML = `<div class="card" style="border-color:#FAD5C8;background:#FEF5F2;">
+      <div style="color:#C4622D;font-weight:500;margin-bottom:6px;">Erro ao gerar o cardápio</div>
+      <div style="font-size:13px;color:#9A6050;">${err.message}</div>
+      <div style="font-size:12px;color:#B48070;margin-top:8px;">Verifique sua chave de API e tente novamente.</div>
+    </div>`;
+  }
+
+  btn.disabled = false;
+}
+
+// ══════════════════════════════════════
+// RENDER RESULT
+// ══════════════════════════════════════
+function renderResult(meal, nut, nAdults, nChildren) {
+  const pPct = Math.min(100, Math.round((meal.proteinas_g / (nut.prot / 4)) * 100));
+  const cPct = Math.min(100, Math.round((meal.carbos_g / (nut.carb / 4)) * 100));
+  const fPct = Math.min(100, Math.round((meal.gorduras_g / (nut.fat / 4)) * 100));
+  const fiPct = Math.min(100, Math.round((meal.fibras_g / (nut.fiber / 4)) * 100));
+
+  const ingsHTML = (meal.ingredientes || []).map(ing => `
+    <tr>
+      <td class="ing-name">${ing.nome}</td>
+      <td class="ing-qty ing-qty-adult">${ing.quantidade_adulto}</td>
+      ${nChildren > 0 ? `<td class="ing-qty ing-qty-child">${ing.quantidade_crianca}</td>` : ''}
+    </tr>
+  `).join('');
+
+  const stepsHTML = (meal.passos || []).map((s, i) => `
+    <div class="step">
+      <div class="step-num">${i + 1}</div>
+      <div class="step-text">${s}</div>
+    </div>
+  `).join('');
+
+  const area = document.getElementById('result-area');
+  area.innerHTML = `
+    <div class="result-card">
+      <div class="result-header">
+        <div class="result-name">${meal.nome}</div>
+        <div class="result-desc">${meal.descricao}</div>
+        <div class="result-tags">
+          <span class="tag">🍽 ${meal.culinaria}</span>
+          <span class="tag">⏱ ${meal.tempo_preparo}</span>
+          <span class="tag">🔥 ${meal.kcal_adulto} kcal adulto</span>
+          ${nChildren > 0 ? `<span class="tag">🌱 ${meal.kcal_crianca} kcal criança</span>` : ''}
+        </div>
+      </div>
+      <div class="result-body">
+
+        <div class="result-section">
+          <div class="result-section-title">Macros desta refeição (% da meta diária)</div>
+          <div class="macro-bars" id="macro-bars">
+            ${barHTML('Proteínas', meal.proteinas_g, Math.round(nut.prot/4), nut.prot, pPct, '#2D5F7A')}
+            ${barHTML('Carboidratos', meal.carbos_g, Math.round(nut.carb/4), nut.carb, cPct, '#C4622D')}
+            ${barHTML('Gorduras', meal.gorduras_g, Math.round(nut.fat/4), nut.fat, fPct, '#8A6000')}
+            ${barHTML('Fibras', meal.fibras_g, Math.round(nut.fiber/4), nut.fiber, fiPct, '#3A6B2F')}
+          </div>
+        </div>
+
+        <hr class="card-divider">
+
+        <div class="result-section">
+          <div class="result-section-title">
+            Ingredientes
+            ${nChildren > 0 ? `<span style="font-size:11px;font-weight:400;margin-left:8px;"><span style="color:#2D5F7A;">adulto</span> / <span style="color:#3A6B2F;">criança</span></span>` : ''}
+          </div>
+          <table class="ing-table">
+            <thead>
+              <tr>
+                <th>Ingrediente</th>
+                <th style="text-align:right;">Adulto</th>
+                ${nChildren > 0 ? `<th style="text-align:right;">Criança</th>` : ''}
+              </tr>
+            </thead>
+            <tbody>${ingsHTML}</tbody>
+          </table>
+        </div>
+
+        <hr class="card-divider">
+
+        <div class="result-section">
+          <div class="result-section-title">Modo de preparo</div>
+          <div class="steps">${stepsHTML}</div>
+        </div>
+
+        <hr class="card-divider">
+
+        <div class="info-card amber">
+          <div class="info-card-title">💡 Dica nutricional</div>
+          ${meal.dica_nutricional}
+        </div>
+
+        <div class="info-card green">
+          <div class="info-card-title">✅ Aderência às diretrizes</div>
+          ${meal.aderencia_diretrizes}
+        </div>
+
+        <button class="btn-again" onclick="generateMeal()">↺ Gerar outro prato</button>
+      </div>
+    </div>
+  `;
+
+  // animate bars
+  setTimeout(() => {
+    document.querySelectorAll('.bar-fill').forEach(b => {
+      b.style.width = b.dataset.w + '%';
+    });
+  }, 100);
+}
+
+function barHTML(label, val, meta_meal, meta_day, pct, color) {
+  return `
+    <div class="macro-bar-item">
+      <div class="macro-bar-label">
+        <span class="macro-bar-name">${label}</span>
+        <span class="macro-bar-val">${val}g <span class="macro-bar-pct">(${pct}% da meta)</span></span>
+      </div>
+      <div class="bar-track">
+        <div class="bar-fill" style="background:${color};" data-w="${pct}"></div>
+      </div>
+    </div>
+  `;
+}
+
+// ══════════════════════════════════════
+// HISTORY
+// ══════════════════════════════════════
+const CUISINE_EMOJI = {
+  'Brasileira':'🇧🇷','Japonesa':'🇯🇵','Mediterrânea':'🫒','Árabe':'🌙',
+  'Italiana':'🇮🇹','Mexicana':'🇲🇽','Indiana':'🇮🇳','Asiática':'🥢','Fusão':'✨'
+};
+
+function saveToHistory(meal) {
+  let hist = loadHistory();
+  hist.unshift(meal);
+  hist = hist.slice(0, 10);
+  ls('history', hist);
+}
+
+function renderHistory() {
+  const hist = loadHistory();
+  const area = document.getElementById('history-area');
+  if (!hist.length) {
+    area.innerHTML = `<div class="empty-state"><div class="empty-icon">🍽</div><div class="empty-text">Nenhum prato gerado ainda</div></div>`;
+    return;
+  }
+  area.innerHTML = `
+    <button class="btn-clear-hist" onclick="clearHistory()">Limpar histórico</button>
+    <div class="history-list">
+      ${hist.map((m, i) => `
+        <div class="history-item" onclick="showHistoryMeal(${i})">
+          <div class="history-emoji">${CUISINE_EMOJI[m.culinaria] || '🍽'}</div>
+          <div class="history-info">
+            <div class="history-name">${m.nome}</div>
+            <div class="history-meta">${m.culinaria} · ${m.mealType} · ${new Date(m.timestamp).toLocaleDateString('pt-BR')}</div>
+          </div>
+          <div class="history-kcal">${m.kcal_adulto} kcal</div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function clearHistory() {
+  if (!confirm('Limpar todo o histórico?')) return;
+  ls('history', []);
+  renderHistory();
+}
+
+function showHistoryMeal(idx) {
+  const hist = loadHistory();
+  const meal = hist[idx];
+  const nut = loadNutrition();
+  const fam = loadFamily();
+  const nAdults = fam.filter(m => m.tipo === 'adulto').length;
+  const nChildren = fam.filter(m => m.tipo === 'criança').length;
+  goTo('home');
+  renderResult(meal, nut, nAdults, nChildren);
+  setTimeout(() => document.getElementById('result-area').scrollIntoView({ behavior: 'smooth' }), 300);
+}
+
+// ══════════════════════════════════════
+// FEEDBACK
+// ══════════════════════════════════════
+function showFeedback(id) {
+  const el = document.getElementById(id);
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+// ══════════════════════════════════════
+// BOOT
+// ══════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  initChips('meal-type-chips', false);
+  initChips('cuisine-chips', true);
+  initChips('restrict-chips', true);
+  initChips('priority-chips', true);
+  initChips('avoid-chips', true);
+  initChips('health-chips', true);
+  initApp();
+});
+</script>
+</body>
+</html>
